@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расходы экономического субъекта</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f2f6fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    /* основной контейнер — белая таблица */
+    .table-container {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0, 20, 40, 0.08);
+      padding: 32px 28px 28px 28px;
+      max-width: 1100px;
+      width: 100%;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    /* шапка (только цветовая полоса, без текста) — #95CAFA */
+    .table-header {
+      background: #95CAFA;
+      height: 8px;
+      width: calc(100% + 56px);
+      margin: -32px -28px 28px -28px;
+      border-radius: 24px 24px 0 0;
+      flex-shrink: 0;
+    }
+
+    /* лупа в правом верхнем углу */
+    .zoom-icon {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #1e2f40;
+      opacity: 0.7;
+      transition: 0.2s;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f0f6fe;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .zoom-icon:hover {
+      opacity: 1;
+      background: #e2edfc;
+      transform: scale(1.02);
+    }
+    .zoom-icon svg {
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
+
+    /* центральная таблица-сетка */
+    .grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    /* Верхний центральный блок (Расходы экономического субъекта) */
+    .central-block {
+      background: #ffffff;
+      border: 1.5px solid #95CAFA;
+      border-radius: 60px;
+      padding: 10px 32px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #000000;
+      letter-spacing: 0.2px;
+      box-shadow: 0 2px 6px rgba(149, 202, 250, 0.15);
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    /* две ветки: левая и правая */
+    .branches {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: stretch;
+      gap: 24px 40px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    /* левая колонка (две ячейки) */
+    .left-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      flex: 1 1 300px;
+      min-width: 220px;
+    }
+
+    /* правая колонка (одна ячейка со списком) */
+    .right-branch {
+      flex: 1 1 300px;
+      min-width: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* общий стиль ячеек с закругленными краями */
+    .rounded-card {
+      background: #ffffff;
+      border: 1.5px solid #95CAFA;
+      border-radius: 30px;
+      padding: 18px 22px;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(149, 202, 250, 0.08);
+      transition: 0.1s;
+      color: #000000;
+      font-weight: 450;
+    }
+
+    /* левая верхняя ячейка */
+    .left-parent {
+      background: #ffffff;
+      border: 1.5px solid #95CAFA;
+      border-radius: 30px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      width: 100%;
+      box-shadow: 0 2px 6px rgba(149, 202, 250, 0.05);
+    }
+
+    /* две дочерние ячейки (под левой) */
+    .child-group {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .child-card {
+      background: #ffffff;
+      border: 1.5px solid #95CAFA;
+      border-radius: 30px;
+      padding: 12px 14px;
+      text-align: center;
+      font-size: 13px;
+      flex: 1 1 140px;
+      min-width: 110px;
+      box-shadow: 0 2px 6px rgba(149, 202, 250, 0.05);
+      font-weight: 450;
+    }
+
+    /* правая ячейка (большая, со списком) */
+    .right-card {
+      background: #ffffff;
+      border: 1.5px solid #95CAFA;
+      border-radius: 30px;
+      padding: 18px 20px 14px 20px;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(149, 202, 250, 0.08);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right-card .title {
+      font-weight: 500;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: 0.2px;
+    }
+
+    .right-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .right-card li {
+      padding: 6px 0 6px 8px;
+      border-bottom: 1px solid #eef5fb;
+      position: relative;
+      font-weight: 400;
+    }
+    .right-card li:last-child {
+      border-bottom: none;
+    }
+    .right-card li::before {
+      content: "•";
+      color: #95CAFA;
+      font-weight: 700;
+      display: inline-block;
+      width: 16px;
+      margin-left: -6px;
+    }
+
+    /* увеличенный шрифт (класс .zoomed) */
+    .zoomed .central-block {
+      font-size: 20px;
+      padding: 12px 40px;
+    }
+    .zoomed .left-parent {
+      font-size: 17px;
+      padding: 14px 18px;
+    }
+    .zoomed .child-card {
+      font-size: 16px;
+      padding: 14px 18px;
+    }
+    .zoomed .right-card .title {
+      font-size: 17px;
+    }
+    .zoomed .right-card ul {
+      font-size: 15px;
+    }
+    .zoomed .right-card li {
+      padding: 8px 0 8px 10px;
+    }
+    .zoomed .right-card li::before {
+      width: 20px;
+    }
+
+    /* адаптив */
+    @media (max-width: 700px) {
+      .branches {
+        flex-direction: column;
+        align-items: center;
+      }
+      .left-branch, .right-branch {
+        width: 100%;
+        max-width: 400px;
+      }
+      .table-container {
+        padding: 24px 16px 20px 16px;
+      }
+      .table-header {
+        width: calc(100% + 32px);
+        margin: -24px -16px 20px -16px;
+      }
+      .zoom-icon {
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .child-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      .child-card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="table-container" id="tableContainer">
+    <!-- цветная шапка (#95CAFA) без текста -->
+    <div class="table-header"></div>
+
+    <!-- значок лупы (увеличение) -->
+    <button class="zoom-icon" id="zoomToggle" aria-label="Увеличить шрифт">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    </button>
+
+    <div class="grid">
+      <!-- центральный прямоугольник -->
+      <div class="central-block">Расходы экономического субъекта</div>
+
+      <!-- две ветки: левая и правая -->
+      <div class="branches">
+        <!-- левая часть -->
+        <div class="left-branch">
+          <div class="left-parent">Расходы, включаемые в чистую прибыль (убыток)</div>
+          <div class="child-group">
+            <div class="child-card">Расходы по обычным видам деятельности</div>
+            <div class="child-card">Расходы, отличные от расходов по обычным видам деятельности</div>
+          </div>
+        </div>
+
+        <!-- правая часть -->
+        <div class="right-branch">
+          <div class="right-card">
+            <div class="title">Расходы, НЕ включаемые в чистую прибыль (убыток)</div>
+            <ul>
+              <li>Суммы корректировок, связанных с изменением учетной политики организации</li>
+              <li>Курсовые разницы (в отношении активов и обязательств, используемых для ведения деятельности за пределами РФ)</li>
+              <li>Суммы уценки основных средств, отличных от инвестиционной недвижимости</li>
+              <li>Суммы уценки НМА</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const container = document.getElementById('tableContainer');
+      const zoomBtn = document.getElementById('zoomToggle');
+      let zoomed = false;
+
+      function toggleZoom() {
+        zoomed = !zoomed;
+        if (zoomed) {
+          container.classList.add('zoomed');
+        } else {
+          container.classList.remove('zoomed');
+        }
+      }
+
+      zoomBtn.addEventListener('click', toggleZoom);
+    })();
+  </script>
+</body>
+</html>
